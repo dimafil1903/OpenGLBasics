@@ -29,6 +29,7 @@ namespace DFN {
                 if (!glfwInit()) {
                     fprintf(stderr, "Ошибка при инициализации GLFW\n");
                 }
+
             }
 
             virtual void render(GLFWwindow *window) {
@@ -49,6 +50,14 @@ namespace DFN {
 
 
         public:
+
+            void init() override{
+                if (!glfwInit()) {
+                    fprintf(stderr, "Ошибка при инициализации GLFW\n");
+                }
+//                glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+//                glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+            }
             void renderTriangleArray(GLfloat vertices[], GLfloat colors[], int n) override {
                 glClearColor(sin(colorRGB * PI / 180), abs(cos(colorRGB * PI / 180)),
                              abs(sin(colorRGB * PI / 180) + cos(colorRGB * PI / 180)), 1.0f);
@@ -58,8 +67,7 @@ namespace DFN {
                     colorRGB <= 180 ? colorRGB += 0.1 : colorRGB = 0;
                 }
 
-
-                glLoadIdentity();
+//                glLoadIdentity();
                 if(rotation) {
                     angle=(float) glfwGetTime() * 50.f;
                 }
@@ -103,7 +111,7 @@ namespace DFN {
 
                 glMatrixMode(GL_PROJECTION_MATRIX);
                 glLoadIdentity();
-                gluPerspective(45, 1.2, 1.1f, 200.0f);
+                gluPerspective(45, 800/600, 0.1f, 10000.0f);
 
                 glMatrixMode(GL_MODELVIEW_MATRIX);
                 glTranslatef(0, 0, -5);
@@ -141,7 +149,7 @@ namespace DFN {
                     colorRGB <= 180 ? colorRGB += 0.1 : colorRGB = 0;
                 }
 
-
+                glEnable(GL_VERTEX_ARRAY);
                 glEnable(GL_DEPTH_TEST);
 
                 glMatrixMode(GL_MODELVIEW); //set the matrix to model view mode
@@ -155,7 +163,7 @@ namespace DFN {
 //                glColor3f(1.f, 1.f, 0.f);
 
                 //Указание отобразить нарисованное немедленно
-                glFlush();
+//                glFlush();
 
 
                 //Создание нового VBO и сохранение идентификатора VBO
@@ -171,25 +179,29 @@ namespace DFN {
 
                 //Сделать новую VBO активным. Повторите это, в случае изменения с инициализации
                 glBufferData(GL_ARRAY_BUFFER, sizeof(Cube::vertices), Cube::vertices, GL_STATIC_DRAW);
-                glVertexPointer(3, GL_FLOAT, 0, NULL);
-                glColorPointer(3, GL_FLOAT, 0, 0);
 
 
                 //VAO
                 glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *) 0);
                 glEnableVertexAttribArray(0);
 
+
+//                glColorPointer(3, GL_FLOAT, 0, 0);
+
+                glBindBuffer(GL_ARRAY_BUFFER, Cube::VBO);
+
                 glEnableClientState(GL_VERTEX_ARRAY);
+                glVertexPointer(3, GL_FLOAT, 5* sizeof(float), 0);
 
-
-                glDrawArrays(GL_TRIANGLE_FAN, 0, sizeof (Cube::vertices) / sizeof (Cube::vertices[0] / 5));
-                glVertexAttribPointer(1, 4, GL_FLOAT, GL_TRUE,  sizeof(Cube::vertices), (void*)(3*sizeof(float)));
-
+                glDrawArrays(GL_TRIANGLES, 0, 36);
+//                glVertexAttribPointer(1, 4, GL_FLOAT, GL_TRUE,  sizeof(Cube::vertices), (void*)(3*sizeof(float)));
+//                glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof (float), (void*) 0);
 
                 glPopMatrix(); //pop the matrix
 
 
-
+                glDisableVertexAttribArray(0);
+                glDisableClientState(GL_VERTEX_ARRAY);
                 glDisableClientState(GL_VERTEX_ARRAY);
 
             }

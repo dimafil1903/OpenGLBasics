@@ -53,7 +53,6 @@ namespace DFN {
                     {
                             "Unable to initialize glfw window"
                     };
-        glfwDefaultWindowHints();
 
         glfwSetWindowPos(_window,
                          pos_x,

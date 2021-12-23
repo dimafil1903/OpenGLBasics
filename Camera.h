@@ -31,9 +31,14 @@ namespace DFN {
 
             };
 
-            virtual glm::vec3 getPos() {
-            };
+            virtual glm::vec3 getPos() = 0;
 
+            virtual glm::mat4 getMat4ModelView(){
+
+            };
+            virtual glm::mat4 getMat4ModelProj(){
+
+            };
             virtual void start() {
 
             };
@@ -64,11 +69,11 @@ namespace DFN {
 
             void setPos(glm::vec3 pos) override {
                 glm::vec3 target = glm::vec3(0.0f, 0.0f, 0.0f);
-                glm::vec3 direction = glm::normalize(pos - target);
+                direction = glm::normalize(pos - target);
                 modelview = glm::lookAt(pos, direction, glm::vec3(0, 1, 0));
                 //glMatrixMode(GL_PROJECTION);
                 //GL_PROJECTION_MATRIX
-                //glLoadMatrixf(&modelview);
+//                glLoadMatrixf(&modelview);
                 glMatrixMode(GL_MODELVIEW);
                 glLoadMatrixf(glm::value_ptr(modelview));
 
@@ -86,13 +91,15 @@ namespace DFN {
             }
 
             glm::vec3 getPos() override {
+                return glm::vec3(0);
             };
 
-            glm::mat4 getMat4ModelView() {
+
+            glm::mat4 getMat4ModelView() override {
                 return modelview;
             };
 
-            glm::mat4 getMat4ModelProj() {
+            glm::mat4 getMat4ModelProj() override {
                 return modelproj;
             };
         };

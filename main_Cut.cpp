@@ -3,15 +3,19 @@
 #include <cstdlib>
 
 #include <cmath>
-#include <GL/glew.h>
 
 #include <string>
+#include <GL/glew.h>
+
+
+#include <GLUT/glut.h>
+#define GLFW_INCLUDE_GLCOREARB
 
 #include <GLFW/glfw3.h>
+
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_access.hpp"
 #include "glm/gtc/type_ptr.hpp"
-
 using namespace std;
 
 template<typename T>
@@ -31,13 +35,48 @@ namespace Globals {
     bool rotation = true;
 
     namespace Cube {
-        GLfloat vertices[] = {
-                .5f, .5f, .5f, -.5f, .5f, .5f, -.5f, -.5f, .5f, .5f, -.5f, .5f,   // v0,v1,v2,v3 (front)
-                .5f, .5f, .5f, .5f, -.5f, .5f, .5f, -.5f, -.5f, .5f, .5f, -.5f,   // v0,v3,v4,v5 (right)
-                .5f, .5f, .5f, .5f, .5f, -.5f, -.5f, .5f, -.5f, -.5f, .5f, .5f,   // v0,v5,v6,v1 (top)
-                -.5f, .5f, .5f, -.5f, .5f, -.5f, -.5f, -.5f, -.5f, -.5f, -.5f, .5f,   // v1,v6,v7,v2 (left)
-                -.5f, -.5f, -.5f, .5f, -.5f, -.5f, .5f, -.5f, .5f, -.5f, -.5f, .5f,   // v7,v4,v3,v2 (bottom)
-                .5f, -.5f, -.5f, -.5f, -.5f, -.5f, -.5f, .5f, -.5f, .5f, .5f, -.5f    // v4,v7,v6,v5 (back)
+        float  vertices[] = {
+                -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
+                0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
+                0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+                0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+                -0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
+                -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
+
+                -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+                0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
+                0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
+                0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
+                -0.5f, 0.5f, 0.5f, 0.0f, 1.0f,
+                -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+
+                -0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+                -0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+                -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+                -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+                -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+                -0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+
+                0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+                0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+                0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+                0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+                0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+                0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+
+                -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+                0.5f, -0.5f, -0.5f, 1.0f, 1.0f,
+                0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
+                0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
+                -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+                -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+
+                -0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
+                0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+                0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+                0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+                -0.5f, 0.5f, 0.5f, 0.0f, 0.0f,
+                -0.5f, 0.5f, -0.5f, 0.0f, 1.0f
         };
         GLfloat normals[] = {
                 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1,  // v0,v1,v2,v3 (front)
@@ -166,9 +205,8 @@ using namespace Globals;
 
 #include "GLWindow.h"
 #include "GLRenderSystem.h"
-
-
 #include "Camera.h"
+#include "GLShader.h"
 
 void resize(GLFWwindow *window, int width, int height) {
 //    println((string) "Width:" + width + "-Height:" + height);
@@ -183,35 +221,6 @@ void resize(GLFWwindow *window, int width, int height) {
     glLoadIdentity();
 }
 
-glm::mat4 calculate_lookAt_matrix(glm::vec3 position, glm::vec3 target, glm::vec3 worldUp) {
-    // 1. Position = known
-    // 2. Calculate cameraDirection
-    glm::vec3 zaxis = glm::normalize(position - target);
-    // 3. Get positive right axis vector
-    glm::vec3 xaxis = glm::normalize(glm::cross(glm::normalize(worldUp), zaxis));
-    // 4. Calculate camera up vector
-    glm::vec3 yaxis = glm::cross(zaxis, xaxis);
-
-    // Create translation and rotation matrix
-    // In glm we access elements as mat[col][row] due to column-major layout
-    glm::mat4 translation = glm::mat4(1.0f); // Identity matrix by default
-    translation[3][0] = -position.x; // Third column, first row
-    translation[3][1] = -position.y;
-    translation[3][2] = -position.z;
-    glm::mat4 rotation = glm::mat4(1.0f);
-    rotation[0][0] = xaxis.x; // First column, first row
-    rotation[1][0] = xaxis.y;
-    rotation[2][0] = xaxis.z;
-    rotation[0][1] = yaxis.x; // First column, second row
-    rotation[1][1] = yaxis.y;
-    rotation[2][1] = yaxis.z;
-    rotation[0][2] = zaxis.x; // First column, third row
-    rotation[1][2] = zaxis.y;
-    rotation[2][2] = zaxis.z;
-
-    // Return lookAt matrix as combination of translation and rotation matrix
-    return rotation * translation; // Remember to read from right to left (first translation then rotation)
-}
 
 void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mode) {
     println((string) "key:" + key + "-scancode:" + scancode + "-action:" + action + "-mode:" + mode);
@@ -229,9 +238,9 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mode
 };
 
 int main(int argc, char **argv) {
-
     bool FULL_SCREEN = false;
-    bool OpenGL33 = false;
+    bool OpenGL33 = true;
+    glm::vec3 RGB = glm::vec3(0);
 
     DFN::GraphCore::GLRenderSystem *renderer;
 
@@ -243,6 +252,17 @@ int main(int argc, char **argv) {
 
 
     renderer->init();
+//#ifdef __APPLE__
+//    /* We need to explicitly ask for a 3.2 context on OS X */
+//    glfwWindowHint (GLFW_CONTEXT_VERSION_MAJOR, 3);
+//    glfwWindowHint (GLFW_CONTEXT_VERSION_MINOR, 0);
+//    glfwWindowHint (GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+//    glfwWindowHint (GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+//
+//#endif
+    cout<<glfwGetVersionString();
+//    println((char *)glGetString(GL_VERSION));
+
 
 
     auto *Win1 = new DFN::GLWindow("Lesson 021", 320, 240, 0, 0);
@@ -257,10 +277,11 @@ int main(int argc, char **argv) {
 
     DFN::GraphCore::Camera *CamFree = new DFN::GraphCore::GLCameraFree();
 
+
     glfwMakeContextCurrent(Win1->getGLFWHandle());
-    CamFree->setPerspective(glm::radians(45.0f), float(840 / 680), 0.01f, 1000.0f);
+    CamFree->setPerspective(glm::radians(45.0), float(320 / 240), 0.001, 1000.0);
     glfwMakeContextCurrent(Win2->getGLFWHandle());
-    CamFree->setPerspective(glm::radians(45.0f), float(840 / 680), 0.01f, 1000.0f);
+    CamFree->setPerspective(glm::radians(45.0), float(320 / 240), 0.001, 1000.0);
 //    glfwMakeContextCurrent(Win3->getGLFWHandle());
 //    CamFree->setPerspective(glm::radians(90.0f), float(840 / 680), 0.01f, 1000.0f);
 
@@ -270,14 +291,19 @@ int main(int argc, char **argv) {
     glfwSwapInterval(1);
     glfwSetFramebufferSizeCallback(Win1->getGLFWHandle(), resize);
 
-
-
     // Инициализируем GLEW
-    glewExperimental = true; // Флаг необходим в Core-режиме OpenGL
+    glewExperimental = GL_TRUE; // Флаг необходим в Core-режиме OpenGL
     if (glewInit() != GLEW_OK) {
         fprintf(stderr, "Невозможно инициализировать GLEW\n");
         return -1;
     }
+
+
+    glfwMakeContextCurrent(Win1->getGLFWHandle());
+
+    auto* shaderBrightDim = new DFN::GraphCore::GLShader("/Volumes/Mybook/Универ/3 курс/Обчислювальна геометрія та комп'ютерна графіка/лб2/BrightAndDim_VertexShader.vs", "/Volumes/Mybook/Универ/3 курс/Обчислювальна геометрія та комп'ютерна графіка/лб2/BrightAndDim_FragmentShader.fs");
+
+
 
 
     while (glfwGetKey(Win1->getGLFWHandle(), GLFW_KEY_ESCAPE) != GLFW_PRESS &&
@@ -287,12 +313,17 @@ int main(int argc, char **argv) {
 
         CamFree->setPos(glm::vec3(10 * cos(angle * PI / 180), 2 * sin(angle * PI / 180), 2 * cos(PI / 180)));
 
-        CamFree->start();
 
+        shaderBrightDim->use();
+        shaderBrightDim->setVec3("rgb", RGB);
+        shaderBrightDim->setMat4("modelView", CamFree->getMat4ModelView());
+        shaderBrightDim->setMat4("modelProj", CamFree->getMat4ModelProj());
+        shaderBrightDim->setFloat("time", glfwGetTime());
         renderer->render(Win1->getGLFWHandle());
-        CamFree->end();
         // Сбрасываем буферы
-//        glUseProgram(0);
+        glUseProgram(0);
+
+
         glfwSwapBuffers(Win1->getGLFWHandle());
 
         /**/
